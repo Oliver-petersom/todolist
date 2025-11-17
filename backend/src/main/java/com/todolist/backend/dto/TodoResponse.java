@@ -1,6 +1,7 @@
 package com.todolist.backend.dto;
 
 
+import com.todolist.backend.enums.TodoCategory;
 import com.todolist.backend.enums.TodoStatus;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class TodoResponse {
     private String title;
     private String description;
     private TodoStatus status;
+    private TodoCategory category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

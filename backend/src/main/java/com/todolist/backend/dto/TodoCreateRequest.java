@@ -1,5 +1,6 @@
 package com.todolist.backend.dto;
 
+import com.todolist.backend.enums.TodoCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -13,4 +14,7 @@ public class TodoCreateRequest {
 
     @Size(max = 5000, message = "描述长度不能超过5000个字符")
     private String description;
+
+    // 分类字段，默认 OTHER
+    private TodoCategory category;
 }

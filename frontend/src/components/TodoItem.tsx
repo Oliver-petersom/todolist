@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Card, Button, Space, Typography, Popconfirm, message } from 'antd';
+import { useState } from 'react';
+import { Card, Button, Space, Typography, Popconfirm, message, Tag } from 'antd';
 import { CheckOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
-import { TodoItem as TodoItemType, TodoStatus } from '../types/todo';
+import type { TodoItem as TodoItemType } from '../types/todo';
+import { TodoStatus, TodoCategoryLabels, TodoCategoryColors } from '../types/todo';
 import { todoApi } from '../api/todoApi';
 
 const { Text, Paragraph } = Typography;
@@ -11,7 +12,7 @@ interface TodoItemProps {
     onUpdate: () => void;
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo, onUpdate }) => {
+export const TodoItem = ({ todo, onUpdate }: TodoItemProps) => {
     const [loading, setLoading] = useState(false);
 
     const handleToggle = async () => {
@@ -57,16 +58,25 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, onUpdate }) => {
             <Space direction="vertical" style={{ width: '100%' }} size="small">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
-                        <Text
-                            strong
-                            style={{
-                                fontSize: 16,
-                                textDecoration: isCompleted ? 'line-through' : 'none',
-                                color: isCompleted ? '#8c8c8c' : '#000000',
-                            }}
-                        >
-                            {todo.title}
-                        </Text>
+                        {/* 标题和分类标签 */}
+                        <div style={{ marginBottom: 8 }}>
+                            <Text
+                                strong
+                                style={{
+                                    fontSize: 16,
+                                    textDecoration: isCompleted ? 'line-through' : 'none',
+                                    color: isCompleted ? '#8c8c8c' : '#000000',
+                                    marginRight: 8,
+                                }}
+                            >
+                                {todo.title}
+                            </Text>
+                            {/* 分类标签 */}
+                            <Tag color={TodoCategoryColors[todo.category]}>
+                                {TodoCategoryLabels[todo.category]}
+                            </Tag>
+                        </div>
+
                         {todo.description && (
                             <Paragraph
                                 style={{

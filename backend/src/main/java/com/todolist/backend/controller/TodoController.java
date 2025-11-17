@@ -4,6 +4,7 @@ import com.todolist.backend.common.Result;
 import com.todolist.backend.dto.TodoCreateRequest;
 import com.todolist.backend.dto.TodoResponse;
 import com.todolist.backend.dto.TodoUpdateRequest;
+import com.todolist.backend.enums.TodoCategory;
 import com.todolist.backend.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,16 @@ public class TodoController {
      * 获取所有任务
      */
     @GetMapping
-    public Result<List<TodoResponse>> list() {
-        List<TodoResponse> todos = todoService.findAll();
+    public Result<List<TodoResponse>> list(
+            @RequestParam(required = false) TodoCategory category) {
+        List<TodoResponse> todos;
+        if (category != null) {
+            // 按分类查询
+            todos = todoService.findByCategory(category);
+        } else {
+            // 查询所有
+            todos = todoService.findAll();
+        }
         return Result.success(todos);
     }
 

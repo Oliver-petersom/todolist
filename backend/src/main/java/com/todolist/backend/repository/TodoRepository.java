@@ -1,8 +1,7 @@
 package com.todolist.backend.repository;
 
-
-
 import com.todolist.backend.entity.TodoItem;
+import com.todolist.backend.enums.TodoCategory;
 import com.todolist.backend.enums.TodoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +16,10 @@ public interface TodoRepository extends JpaRepository<TodoItem, Long> {
 
     // 按创建时间倒序查询所有
     List<TodoItem> findAllByOrderByCreatedAtDesc();
+
+    // 根据分类查询
+    List<TodoItem> findByCategoryOrderByCreatedAtDesc(TodoCategory category);
+
+    // 根据分类和状态查询
+    List<TodoItem> findByCategoryAndStatusOrderByCreatedAtDesc(TodoCategory category, TodoStatus status);
 }

@@ -5,6 +5,7 @@ package com.todolist.backend.service;
 import com.todolist.backend.dto.TodoCreateRequest;
 import com.todolist.backend.dto.TodoResponse;
 import com.todolist.backend.dto.TodoUpdateRequest;
+import com.todolist.backend.enums.TodoCategory;
 
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface TodoService {
 
     // 删除任务
     void delete(Long id);
+
+    // 根据分类查询
+    List<TodoResponse> findByCategory(TodoCategory category);
 }

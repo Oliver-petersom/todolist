@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Input, Button, Form, message } from 'antd';
+import { useState } from 'react';
+import { Input, Button, Form, message, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { todoApi } from '../api/todoApi';
-import { TodoCreateRequest } from '../types/todo';
+import type { TodoCreateRequest } from '../types/todo';
+import { TodoCategory, TodoCategoryLabels } from '../types/todo';
 
 const { TextArea } = Input;
 
@@ -10,7 +11,7 @@ interface TodoFormProps {
     onSuccess: () => void;
 }
 
-export const TodoForm: React.FC<TodoFormProps> = ({ onSuccess }) => {
+export const TodoForm = ({ onSuccess }: TodoFormProps) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
@@ -34,7 +35,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onSuccess }) => {
             form={form}
             onFinish={handleSubmit}
             layout="vertical"
-            style={{ marginBottom: 24 }}
+            initialValues={{ category: TodoCategory.OTHER }}
         >
             <Form.Item
                 name="title"
@@ -62,6 +63,21 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onSuccess }) => {
                     showCount
                     maxLength={5000}
                 />
+            </Form.Item>
+
+            {/* 新增：分类选择 */}
+            <Form.Item
+                name="category"
+                label="分类"
+                rules={[{ required: true, message: '请选择分类' }]}
+            >
+                <Select size="large" placeholder="选择任务分类">
+                    {Object.entries(TodoCategoryLabels).map(([key, label]) => (
+                        <Select.Option key={key} value={key}>
+                            {label}
+                        </Select.Option>
+                    ))}
+                </Select>
             </Form.Item>
 
             <Form.Item>

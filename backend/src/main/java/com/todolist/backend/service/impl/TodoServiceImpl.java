@@ -1,10 +1,10 @@
 package com.todolist.backend.service.impl;
 
-
 import com.todolist.backend.dto.TodoCreateRequest;
 import com.todolist.backend.dto.TodoResponse;
 import com.todolist.backend.dto.TodoUpdateRequest;
 import com.todolist.backend.entity.TodoItem;
+import com.todolist.backend.enums.TodoCategory;
 import com.todolist.backend.enums.TodoStatus;
 import com.todolist.backend.repository.TodoRepository;
 import com.todolist.backend.service.TodoService;
@@ -29,6 +29,12 @@ public class TodoServiceImpl implements TodoService {
         item.setTitle(request.getTitle());
         item.setDescription(request.getDescription());
         item.setStatus(TodoStatus.PENDING);
+
+        if (request.getCategory() != null) {
+            item.setCategory(request.getCategory());
+        } else {
+            item.setCategory(TodoCategory.OTHER);
+        }
 
         TodoItem saved = todoRepository.save(item);
         return convertToResponse(saved);
@@ -61,6 +67,10 @@ public class TodoServiceImpl implements TodoService {
         if (request.getDescription() != null) {
             item.setDescription(request.getDescription());
         }
+        // 更新分类
+        if (request.getCategory() != null) {
+            item.setCategory(request.getCategory());
+        }
 
         TodoItem updated = todoRepository.save(item);
         return convertToResponse(updated);
@@ -88,6 +98,15 @@ public class TodoServiceImpl implements TodoService {
             throw new RuntimeException("任务不存在: " + id);
         }
         todoRepository.deleteById(id);
+    }
+
+    // 根据分类查询
+    @Override
+    public List<TodoResponse> findByCategory(TodoCategory category) {
+        return todoRepository.findByCategoryOrderByCreatedAtDesc(category)
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     // Entity 转 DTO

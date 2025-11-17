@@ -1,6 +1,7 @@
 package com.todolist.backend.entity;
 
 
+import com.todolist.backend.enums.TodoCategory;
 import com.todolist.backend.enums.TodoStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,6 +28,10 @@ public class TodoItem {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private TodoStatus status = TodoStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private TodoCategory category = TodoCategory.OTHER;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

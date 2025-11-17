@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { TodoItem, TodoCreateRequest, TodoUpdateRequest, ApiResponse } from '../types/todo';
+import { TodoCategory } from '../types/todo';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -12,8 +13,9 @@ const apiClient = axios.create({
 
 export const todoApi = {
     // 获取所有任务
-    getAll: async (): Promise<TodoItem[]> => {
-        const response = await apiClient.get<ApiResponse<TodoItem[]>>('/todos');
+    getAll: async (category?: TodoCategory): Promise<TodoItem[]> => {
+        const params = category ? { category } : {};
+        const response = await apiClient.get<ApiResponse<TodoItem[]>>('/todos', { params });
         return response.data.data;
     },
 

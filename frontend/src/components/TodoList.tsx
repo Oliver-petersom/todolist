@@ -1,15 +1,23 @@
-import React from 'react';
-import { Empty, Spin, Tabs } from 'antd';
-import { TodoItem as TodoItemType, TodoStatus } from '../types/todo';
+import { Empty, Spin, Tabs, Select, Space } from 'antd';
+import type { TodoItem as TodoItemType } from '../types/todo';
+import { TodoStatus, TodoCategory, TodoCategoryLabels } from '../types/todo';
 import { TodoItem } from './TodoItem';
 
 interface TodoListProps {
     todos: TodoItemType[];
     loading: boolean;
     onUpdate: () => void;
+    selectedCategory: TodoCategory | undefined;
+    onCategoryChange: (category: TodoCategory | undefined) => void;
 }
 
-export const TodoList: React.FC<TodoListProps> = ({ todos, loading, onUpdate }) => {
+export const TodoList = ({
+                             todos,
+                             loading,
+                             onUpdate,
+                             selectedCategory,
+                             onCategoryChange
+                         }: TodoListProps) => {
     if (loading) {
         return (
             <div style={{ textAlign: 'center', padding: '50px 0' }}>
@@ -18,12 +26,28 @@ export const TodoList: React.FC<TodoListProps> = ({ todos, loading, onUpdate }) 
         );
     }
 
-    if (todos.length === 0) {
-        return <Empty description="暂无任务，快来添加一个吧！" />;
-    }
-
     const pendingTodos = todos.filter(todo => todo.status === TodoStatus.PENDING);
     const completedTodos = todos.filter(todo => todo.status === TodoStatus.COMPLETED);
+
+    // 分类筛选器
+    const CategoryFilter = () => (
+        <Space style={{ marginBottom: 16 }}>
+            <span>分类筛选：</span>
+            <Select
+                style={{ width: 120 }}
+                placeholder="全部分类"
+                allowClear
+                value={selectedCategory}
+                onChange={onCategoryChange}
+            >
+                {Object.entries(TodoCategoryLabels).map(([key, label]) => (
+                    <Select.Option key={key} value={key}>
+                        {label}
+                    </Select.Option>
+                ))}
+            </Select>
+        </Space>
+    );
 
     const tabItems = [
         {
@@ -31,9 +55,14 @@ export const TodoList: React.FC<TodoListProps> = ({ todos, loading, onUpdate }) 
             label: `全部 (${todos.length})`,
             children: (
                 <div>
-                    {todos.map(todo => (
-                        <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />
-                    ))}
+                    <CategoryFilter />
+                    {todos.length > 0 ? (
+                        todos.map(todo => (
+                            <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />
+                        ))
+                    ) : (
+                        <Empty description="暂无任务，快来添加一个吧！" />
+                    )}
                 </div>
             ),
         },
@@ -42,6 +71,7 @@ export const TodoList: React.FC<TodoListProps> = ({ todos, loading, onUpdate }) 
             label: `未完成 (${pendingTodos.length})`,
             children: (
                 <div>
+                    <CategoryFilter />
                     {pendingTodos.length > 0 ? (
                         pendingTodos.map(todo => (
                             <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />
@@ -57,6 +87,7 @@ export const TodoList: React.FC<TodoListProps> = ({ todos, loading, onUpdate }) 
             label: `已完成 (${completedTodos.length})`,
             children: (
                 <div>
+                    <CategoryFilter />
                     {completedTodos.length > 0 ? (
                         completedTodos.map(todo => (
                             <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />

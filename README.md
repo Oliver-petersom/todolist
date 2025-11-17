@@ -6,7 +6,7 @@
 
 ### 后端
 - Java 17
-- Spring Boot 3.x
+- Spring Boot 3.5.7
 - Spring Data JPA
 - MySQL 8.0
 - Maven
@@ -25,6 +25,7 @@
 - 标记完成/未完成
 - 查看任务列表（全部/未完成/已完成）
 - 数据持久化
+- 分类待办事项
 
 ## 快速开始
 
@@ -66,6 +67,7 @@ npm run dev
 - `PUT /api/todos/{id}` - 更新任务
 - `PUT /api/todos/{id}/toggle` - 切换任务状态
 - `DELETE /api/todos/{id}` - 删除任务
+- `GET /api/todos?category={category}` - 删除任务
 
 ## 项目结构
 ```
