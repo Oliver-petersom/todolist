@@ -26,6 +26,7 @@
 - 查看任务列表（全部/未完成/已完成）
 - 数据持久化
 - 分类待办事项
+- 根据优先级和截止时间排序待办事项
 
 ## 快速开始
 
@@ -67,7 +68,9 @@ npm run dev
 - `PUT /api/todos/{id}` - 更新任务
 - `PUT /api/todos/{id}/toggle` - 切换任务状态
 - `DELETE /api/todos/{id}` - 删除任务
-- `GET /api/todos?category={category}` - 删除任务
+- `GET /api/todos?category={category}` - 分类任务
+- `GET api/todos?sortBy=priority` - 根据优先级排序任务
+- `GET api/todos?sortBy=dueDate` - 根据截止时间排序任务
 
 ## 项目结构
 ```
