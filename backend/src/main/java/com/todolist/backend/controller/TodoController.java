@@ -22,17 +22,18 @@ public class TodoController {
 
     /**
      * 获取所有任务
+     * @param category 分类筛选
+     * @param sortBy 排序方式：createdAt, priority, dueDate
      */
     @GetMapping
     public Result<List<TodoResponse>> list(
-            @RequestParam(required = false) TodoCategory category) {
+            @RequestParam(required = false) TodoCategory category,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
         List<TodoResponse> todos;
         if (category != null) {
-            // 按分类查询
-            todos = todoService.findByCategory(category);
+            todos = todoService.findByCategory(category, sortBy);
         } else {
-            // 查询所有
-            todos = todoService.findAll();
+            todos = todoService.findAll(sortBy);
         }
         return Result.success(todos);
     }

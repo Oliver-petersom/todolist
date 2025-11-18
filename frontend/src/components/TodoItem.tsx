@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Card, Button, Space, Typography, Popconfirm, message, Tag } from 'antd';
-import { CheckOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, ClockCircleOutlined, FlagOutlined } from '@ant-design/icons';
 import type { TodoItem as TodoItemType } from '../types/todo';
-import { TodoStatus, TodoCategoryLabels, TodoCategoryColors } from '../types/todo';
+import { TodoStatus, TodoCategoryLabels, TodoCategoryColors, TodoPriorityLabels, TodoPriorityColors } from '../types/todo';
 import { todoApi } from '../api/todoApi';
+import dayjs from 'dayjs';
 
 const { Text, Paragraph } = Typography;
 
@@ -47,18 +48,25 @@ export const TodoItem = ({ todo, onUpdate }: TodoItemProps) => {
 
     const isCompleted = todo.status === TodoStatus.COMPLETED;
 
+    // 判断是否即将到期（3天内）
+    const isNearDue = todo.dueDate && dayjs(todo.dueDate).diff(dayjs(), 'day') <= 3 && dayjs(todo.dueDate).isAfter(dayjs());
+
+    // 判断是否已过期
+    const isOverdue = todo.dueDate && dayjs(todo.dueDate).isBefore(dayjs()) && !isCompleted;
+
     return (
         <Card
             style={{
                 marginBottom: 16,
                 backgroundColor: isCompleted ? '#f6ffed' : '#ffffff',
-                borderColor: isCompleted ? '#b7eb8f' : '#d9d9d9',
+                borderColor: isCompleted ? '#b7eb8f' : isOverdue ? '#ff4d4f' : '#d9d9d9',
+                borderWidth: isOverdue ? 2 : 1,
             }}
         >
             <Space direction="vertical" style={{ width: '100%' }} size="small">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
-                        {/* 标题和分类标签 */}
+                        {/* 标题、分类和优先级 */}
                         <div style={{ marginBottom: 8 }}>
                             <Text
                                 strong
@@ -71,11 +79,30 @@ export const TodoItem = ({ todo, onUpdate }: TodoItemProps) => {
                             >
                                 {todo.title}
                             </Text>
+
                             {/* 分类标签 */}
                             <Tag color={TodoCategoryColors[todo.category]}>
                                 {TodoCategoryLabels[todo.category]}
                             </Tag>
+
+                            {/* 优先级标签 */}
+                            <Tag icon={<FlagOutlined />} color={TodoPriorityColors[todo.priority]}>
+                                {TodoPriorityLabels[todo.priority]}
+                            </Tag>
                         </div>
+
+                        {/* 截止日期 */}
+                        {todo.dueDate && (
+                            <div style={{ marginBottom: 8 }}>
+                                <Tag
+                                    icon={<ClockCircleOutlined />}
+                                    color={isOverdue ? 'error' : isNearDue ? 'warning' : 'default'}
+                                >
+                                    {isOverdue ? '已过期: ' : '截止: '}
+                                    {dayjs(todo.dueDate).format('YYYY-MM-DD HH:mm')}
+                                </Tag>
+                            </div>
+                        )}
 
                         {todo.description && (
                             <Paragraph
@@ -118,7 +145,7 @@ export const TodoItem = ({ todo, onUpdate }: TodoItemProps) => {
                 </div>
 
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                    创建时间: {new Date(todo.createdAt).toLocaleString('zh-CN')}
+                    创建时间: {dayjs(todo.createdAt).format('YYYY-MM-DD HH:mm')}
                 </Text>
             </Space>
         </Card>

@@ -3,12 +3,18 @@ export enum TodoStatus {
     COMPLETED = 'COMPLETED'
 }
 
-// 分类枚举
 export enum TodoCategory {
     WORK = 'WORK',
     STUDY = 'STUDY',
     LIFE = 'LIFE',
     OTHER = 'OTHER'
+}
+
+// 优先级枚举
+export enum TodoPriority {
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH'
 }
 
 // 分类显示名称映射
@@ -21,10 +27,24 @@ export const TodoCategoryLabels: Record<TodoCategory, string> = {
 
 // 分类颜色映射
 export const TodoCategoryColors: Record<TodoCategory, string> = {
-    [TodoCategory.WORK]: '#1890ff',  // 蓝色
-    [TodoCategory.STUDY]: '#52c41a', // 绿色
-    [TodoCategory.LIFE]: '#faad14',  // 橙色
-    [TodoCategory.OTHER]: '#000000', // 黑色
+    [TodoCategory.WORK]: '#1890ff',
+    [TodoCategory.STUDY]: '#3C005A',
+    [TodoCategory.LIFE]: '#F4F5F0',
+    [TodoCategory.OTHER]: '#FFD700',
+};
+
+// 优先级显示名称映射
+export const TodoPriorityLabels: Record<TodoPriority, string> = {
+    [TodoPriority.HIGH]: '高',
+    [TodoPriority.MEDIUM]: '中',
+    [TodoPriority.LOW]: '低',
+};
+
+// 优先级颜色映射
+export const TodoPriorityColors: Record<TodoPriority, string> = {
+    [TodoPriority.HIGH]: '#ff4d4f',    // 红色
+    [TodoPriority.MEDIUM]: '#faad14',  // 橙色
+    [TodoPriority.LOW]: '#52c41a',     // 绿色
 };
 
 export interface TodoItem {
@@ -33,6 +53,8 @@ export interface TodoItem {
     description: string | null;
     status: TodoStatus;
     category: TodoCategory;
+    priority: TodoPriority;
+    dueDate: string | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -41,12 +63,16 @@ export interface TodoCreateRequest {
     title: string;
     description?: string;
     category?: TodoCategory;
+    priority?: TodoPriority;
+    dueDate?: string;
 }
 
 export interface TodoUpdateRequest {
     title?: string;
     description?: string;
     category?: TodoCategory;
+    priority?: TodoPriority;
+    dueDate?: string;
 }
 
 export interface ApiResponse<T> {

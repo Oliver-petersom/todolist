@@ -1,4 +1,4 @@
-import { Empty, Spin, Tabs, Select, Space } from 'antd';
+import { Empty, Spin, Tabs, Select, Space, Radio } from 'antd';
 import type { TodoItem as TodoItemType } from '../types/todo';
 import { TodoStatus, TodoCategory, TodoCategoryLabels } from '../types/todo';
 import { TodoItem } from './TodoItem';
@@ -9,6 +9,8 @@ interface TodoListProps {
     onUpdate: () => void;
     selectedCategory: TodoCategory | undefined;
     onCategoryChange: (category: TodoCategory | undefined) => void;
+    sortBy: string;
+    onSortChange: (sortBy: string) => void;
 }
 
 export const TodoList = ({
@@ -16,7 +18,9 @@ export const TodoList = ({
                              loading,
                              onUpdate,
                              selectedCategory,
-                             onCategoryChange
+                             onCategoryChange,
+                             sortBy,
+                             onSortChange
                          }: TodoListProps) => {
     if (loading) {
         return (
@@ -29,23 +33,34 @@ export const TodoList = ({
     const pendingTodos = todos.filter(todo => todo.status === TodoStatus.PENDING);
     const completedTodos = todos.filter(todo => todo.status === TodoStatus.COMPLETED);
 
-    // 分类筛选器
-    const CategoryFilter = () => (
-        <Space style={{ marginBottom: 16 }}>
-            <span>分类筛选：</span>
-            <Select
-                style={{ width: 120 }}
-                placeholder="全部分类"
-                allowClear
-                value={selectedCategory}
-                onChange={onCategoryChange}
-            >
-                {Object.entries(TodoCategoryLabels).map(([key, label]) => (
-                    <Select.Option key={key} value={key}>
-                        {label}
-                    </Select.Option>
-                ))}
-            </Select>
+    // 筛选和排序控制器
+    const FilterAndSortControls = () => (
+        <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
+            <Space>
+                <span>分类:</span>
+                <Select
+                    style={{ width: 120 }}
+                    placeholder="全部分类"
+                    allowClear
+                    value={selectedCategory}
+                    onChange={onCategoryChange}
+                >
+                    {Object.entries(TodoCategoryLabels).map(([key, label]) => (
+                        <Select.Option key={key} value={key}>
+                            {label}
+                        </Select.Option>
+                    ))}
+                </Select>
+            </Space>
+
+            <Space>
+                <span>排序:</span>
+                <Radio.Group value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
+                    <Radio.Button value="createdAt">创建时间</Radio.Button>
+                    <Radio.Button value="priority">优先级</Radio.Button>
+                    <Radio.Button value="dueDate">截止日期</Radio.Button>
+                </Radio.Group>
+            </Space>
         </Space>
     );
 
@@ -55,7 +70,7 @@ export const TodoList = ({
             label: `全部 (${todos.length})`,
             children: (
                 <div>
-                    <CategoryFilter />
+                    <FilterAndSortControls />
                     {todos.length > 0 ? (
                         todos.map(todo => (
                             <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />
@@ -71,7 +86,7 @@ export const TodoList = ({
             label: `未完成 (${pendingTodos.length})`,
             children: (
                 <div>
-                    <CategoryFilter />
+                    <FilterAndSortControls />
                     {pendingTodos.length > 0 ? (
                         pendingTodos.map(todo => (
                             <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />
@@ -87,7 +102,7 @@ export const TodoList = ({
             label: `已完成 (${completedTodos.length})`,
             children: (
                 <div>
-                    <CategoryFilter />
+                    <FilterAndSortControls />
                     {completedTodos.length > 0 ? (
                         completedTodos.map(todo => (
                             <TodoItem key={todo.id} todo={todo} onUpdate={onUpdate} />

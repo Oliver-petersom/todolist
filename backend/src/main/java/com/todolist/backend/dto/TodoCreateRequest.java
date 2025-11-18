@@ -1,9 +1,12 @@
 package com.todolist.backend.dto;
 
 import com.todolist.backend.enums.TodoCategory;
+import com.todolist.backend.enums.TodoPriority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class TodoCreateRequest {
@@ -17,4 +20,10 @@ public class TodoCreateRequest {
 
     // 分类字段，默认 OTHER
     private TodoCategory category;
+
+    // 优先级
+    private TodoPriority priority;
+
+    // 截止日期
+    private LocalDateTime dueDate;
 }

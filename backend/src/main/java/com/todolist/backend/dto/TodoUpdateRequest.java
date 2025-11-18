@@ -1,8 +1,11 @@
 package com.todolist.backend.dto;
 
 import com.todolist.backend.enums.TodoCategory;
+import com.todolist.backend.enums.TodoPriority;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class TodoUpdateRequest {
@@ -14,4 +17,10 @@ public class TodoUpdateRequest {
     private String description;
 
     private TodoCategory category;
+
+    // 优先级
+    private TodoPriority priority;
+
+    // 截止日期
+    private LocalDateTime dueDate;
 }

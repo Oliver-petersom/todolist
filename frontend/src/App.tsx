@@ -14,11 +14,12 @@ function App() {
     const [todos, setTodos] = useState<TodoItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<TodoCategory | undefined>(undefined);
+    const [sortBy, setSortBy] = useState<string>('createdAt');
 
     const fetchTodos = async () => {
         try {
             setLoading(true);
-            const data = await todoApi.getAll(selectedCategory);
+            const data = await todoApi.getAll(selectedCategory, sortBy);
             setTodos(data);
         } catch (error) {
             message.error('获取任务列表失败');
@@ -30,17 +31,21 @@ function App() {
 
     useEffect(() => {
         fetchTodos();
-    }, [selectedCategory]);
+    }, [selectedCategory, sortBy]);
 
     const handleCategoryChange = (category: TodoCategory | undefined) => {
         setSelectedCategory(category);
+    };
+
+    const handleSortChange = (newSortBy: string) => {
+        setSortBy(newSortBy);
     };
 
     return (
         <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
             <Header style={{ backgroundColor: '#1890ff' }}>
                 <Title level={2} style={{ color: 'white', margin: '14px 0' }}>
-                     TODO List
+                    📝 TODO List
                 </Title>
             </Header>
 
@@ -57,6 +62,8 @@ function App() {
                             onUpdate={fetchTodos}
                             selectedCategory={selectedCategory}
                             onCategoryChange={handleCategoryChange}
+                            sortBy={sortBy}
+                            onSortChange={handleSortChange}
                         />
                     </Card>
                 </div>

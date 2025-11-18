@@ -2,6 +2,7 @@ package com.todolist.backend.entity;
 
 
 import com.todolist.backend.enums.TodoCategory;
+import com.todolist.backend.enums.TodoPriority;
 import com.todolist.backend.enums.TodoStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,6 +33,13 @@ public class TodoItem {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private TodoCategory category = TodoCategory.OTHER;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private TodoPriority priority = TodoPriority.MEDIUM;
+
+    @Column(name = "due_date")
+    private LocalDateTime dueDate;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

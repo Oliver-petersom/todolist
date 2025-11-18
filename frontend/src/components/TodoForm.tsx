@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Input, Button, Form, message, Select } from 'antd';
+import { Input, Button, Form, message, Select, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { todoApi } from '../api/todoApi';
 import type { TodoCreateRequest } from '../types/todo';
-import { TodoCategory, TodoCategoryLabels } from '../types/todo';
+import { TodoCategory, TodoCategoryLabels, TodoPriority, TodoPriorityLabels } from '../types/todo';
+import dayjs from 'dayjs';
 
 const { TextArea } = Input;
 
@@ -15,10 +16,17 @@ export const TodoForm = ({ onSuccess }: TodoFormProps) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (values: TodoCreateRequest) => {
+    const handleSubmit = async (values: any) => {
         try {
             setLoading(true);
-            await todoApi.create(values);
+
+            // 处理日期格式
+            const request: TodoCreateRequest = {
+                ...values,
+                dueDate: values.dueDate ? values.dueDate.toISOString() : undefined,
+            };
+
+            await todoApi.create(request);
             message.success('任务创建成功！');
             form.resetFields();
             onSuccess();
@@ -35,7 +43,10 @@ export const TodoForm = ({ onSuccess }: TodoFormProps) => {
             form={form}
             onFinish={handleSubmit}
             layout="vertical"
-            initialValues={{ category: TodoCategory.OTHER }}
+            initialValues={{
+                category: TodoCategory.OTHER,
+                priority: TodoPriority.MEDIUM
+            }}
         >
             <Form.Item
                 name="title"
@@ -65,19 +76,52 @@ export const TodoForm = ({ onSuccess }: TodoFormProps) => {
                 />
             </Form.Item>
 
-            {/* 新增：分类选择 */}
+            {/* 分类和优先级并排 */}
+            <div style={{ display: 'flex', gap: 16 }}>
+                <Form.Item
+                    name="category"
+                    label="分类"
+                    rules={[{ required: true, message: '请选择分类' }]}
+                    style={{ flex: 1 }}
+                >
+                    <Select size="large" placeholder="选择任务分类">
+                        {Object.entries(TodoCategoryLabels).map(([key, label]) => (
+                            <Select.Option key={key} value={key}>
+                                {label}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+
+                {/* 优先级选择 */}
+                <Form.Item
+                    name="priority"
+                    label="优先级"
+                    rules={[{ required: true, message: '请选择优先级' }]}
+                    style={{ flex: 1 }}
+                >
+                    <Select size="large" placeholder="选择优先级">
+                        {Object.entries(TodoPriorityLabels).map(([key, label]) => (
+                            <Select.Option key={key} value={key}>
+                                {label}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            </div>
+
+            {/* 截止日期 */}
             <Form.Item
-                name="category"
-                label="分类"
-                rules={[{ required: true, message: '请选择分类' }]}
+                name="dueDate"
+                label="截止日期"
             >
-                <Select size="large" placeholder="选择任务分类">
-                    {Object.entries(TodoCategoryLabels).map(([key, label]) => (
-                        <Select.Option key={key} value={key}>
-                            {label}
-                        </Select.Option>
-                    ))}
-                </Select>
+                <DatePicker
+                    showTime
+                    format="YYYY-MM-DD HH:mm"
+                    placeholder="选择截止日期（可选）"
+                    style={{ width: '100%' }}
+                    size="large"
+                />
             </Form.Item>
 
             <Form.Item>

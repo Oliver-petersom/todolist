@@ -15,7 +15,7 @@ public interface TodoService {
     TodoResponse create(TodoCreateRequest request);
 
     // 获取所有任务
-    List<TodoResponse> findAll();
+    List<TodoResponse> findAll(String sortBy);
 
     // 根据 ID 获取任务
     TodoResponse findById(Long id);
@@ -30,5 +30,5 @@ public interface TodoService {
     void delete(Long id);
 
     // 根据分类查询
-    List<TodoResponse> findByCategory(TodoCategory category);
+    List<TodoResponse> findByCategory(TodoCategory category, String sortBy);
 }

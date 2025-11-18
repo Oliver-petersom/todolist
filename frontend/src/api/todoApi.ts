@@ -13,8 +13,11 @@ const apiClient = axios.create({
 
 export const todoApi = {
     // 获取所有任务
-    getAll: async (category?: TodoCategory): Promise<TodoItem[]> => {
-        const params = category ? { category } : {};
+    getAll: async (category?: TodoCategory, sortBy?: string): Promise<TodoItem[]> => {
+        const params: any = {};
+        if (category) params.category = category;
+        if (sortBy) params.sortBy = sortBy;
+
         const response = await apiClient.get<ApiResponse<TodoItem[]>>('/todos', { params });
         return response.data.data;
     },

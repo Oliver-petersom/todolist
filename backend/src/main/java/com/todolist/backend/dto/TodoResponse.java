@@ -2,6 +2,7 @@ package com.todolist.backend.dto;
 
 
 import com.todolist.backend.enums.TodoCategory;
+import com.todolist.backend.enums.TodoPriority;
 import com.todolist.backend.enums.TodoStatus;
 import lombok.Data;
 
@@ -14,6 +15,8 @@ public class TodoResponse {
     private String description;
     private TodoStatus status;
     private TodoCategory category;
+    private TodoPriority priority;
+    private LocalDateTime dueDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

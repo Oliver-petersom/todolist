@@ -5,6 +5,7 @@ import com.todolist.backend.dto.TodoResponse;
 import com.todolist.backend.dto.TodoUpdateRequest;
 import com.todolist.backend.entity.TodoItem;
 import com.todolist.backend.enums.TodoCategory;
+import com.todolist.backend.enums.TodoPriority;
 import com.todolist.backend.enums.TodoStatus;
 import com.todolist.backend.repository.TodoRepository;
 import com.todolist.backend.service.TodoService;
@@ -36,14 +37,36 @@ public class TodoServiceImpl implements TodoService {
             item.setCategory(TodoCategory.OTHER);
         }
 
+        // 设置优先级
+        if (request.getPriority() != null) {
+            item.setPriority(request.getPriority());
+        } else {
+            item.setPriority(TodoPriority.MEDIUM);
+        }
+
+        // 设置截止日期
+        if (request.getDueDate() != null) {
+            item.setDueDate(request.getDueDate());
+        }
+
         TodoItem saved = todoRepository.save(item);
         return convertToResponse(saved);
     }
 
     @Override
-    public List<TodoResponse> findAll() {
-        return todoRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
+    public List<TodoResponse> findAll(String sortBy) {
+        List<TodoItem> items;
+
+        if ("priority".equals(sortBy)) {
+            items = todoRepository.findAllOrderByPriority();
+        } else if ("dueDate".equals(sortBy)) {
+            items = todoRepository.findAllOrderByDueDate();
+        } else {
+            // 默认按创建时间排序
+            items = todoRepository.findAllByOrderByCreatedAtDesc();
+        }
+
+        return items.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -67,9 +90,17 @@ public class TodoServiceImpl implements TodoService {
         if (request.getDescription() != null) {
             item.setDescription(request.getDescription());
         }
-        // 更新分类
+        // 分类
         if (request.getCategory() != null) {
             item.setCategory(request.getCategory());
+        }
+        // 优先级
+        if (request.getPriority() != null) {
+            item.setPriority(request.getPriority());
+        }
+        // 截止日期
+        if (request.getDueDate() != null) {
+            item.setDueDate(request.getDueDate());
         }
 
         TodoItem updated = todoRepository.save(item);
@@ -102,9 +133,19 @@ public class TodoServiceImpl implements TodoService {
 
     // 根据分类查询
     @Override
-    public List<TodoResponse> findByCategory(TodoCategory category) {
-        return todoRepository.findByCategoryOrderByCreatedAtDesc(category)
-                .stream()
+    public List<TodoResponse> findByCategory(TodoCategory category, String sortBy) {
+        List<TodoItem> items;
+
+        if ("priority".equals(sortBy)) {
+            items = todoRepository.findByCategoryOrderByPriority(category);
+        } else if ("dueDate".equals(sortBy)) {
+            items = todoRepository.findByCategoryOrderByDueDate(category);
+        } else {
+            // 默认按创建时间排序
+            items = todoRepository.findByCategoryOrderByCreatedAtDesc(category);
+        }
+
+        return items.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
