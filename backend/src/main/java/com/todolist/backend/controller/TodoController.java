@@ -39,6 +39,21 @@ public class TodoController {
     }
 
     /**
+     * 搜索任务
+     * @param keyword 搜索关键词
+     * @param category 分类筛选（可选）
+     * @param sortBy 排序方式（可选）
+     */
+    @GetMapping("/search")
+    public Result<List<TodoResponse>> search(
+            @RequestParam String keyword,
+            @RequestParam(required = false) TodoCategory category,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy) {
+        List<TodoResponse> todos = todoService.search(keyword, category, sortBy);
+        return Result.success(todos);
+    }
+
+    /**
      * 根据 ID 获取任务
      */
     @GetMapping("/{id}")

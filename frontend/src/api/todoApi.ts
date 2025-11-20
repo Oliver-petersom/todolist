@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TodoItem, TodoCreateRequest, TodoUpdateRequest, ApiResponse } from '../types/todo';
+import type { TodoItem, TodoCreateRequest, TodoUpdateRequest, ApiResponse } from '../types/todo';
 import { TodoCategory } from '../types/todo';
 
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -12,13 +12,23 @@ const apiClient = axios.create({
 });
 
 export const todoApi = {
-    // 获取所有任务
+    // 获取所有任务（可选按分类筛选、排序）
     getAll: async (category?: TodoCategory, sortBy?: string): Promise<TodoItem[]> => {
         const params: any = {};
         if (category) params.category = category;
         if (sortBy) params.sortBy = sortBy;
 
         const response = await apiClient.get<ApiResponse<TodoItem[]>>('/todos', { params });
+        return response.data.data;
+    },
+
+    // 搜索任务
+    search: async (keyword: string, category?: TodoCategory, sortBy?: string): Promise<TodoItem[]> => {
+        const params: any = { keyword };
+        if (category) params.category = category;
+        if (sortBy) params.sortBy = sortBy;
+
+        const response = await apiClient.get<ApiResponse<TodoItem[]>>('/todos/search', { params });
         return response.data.data;
     },
 

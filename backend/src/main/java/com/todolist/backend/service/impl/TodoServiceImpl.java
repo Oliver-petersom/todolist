@@ -150,6 +150,42 @@ public class TodoServiceImpl implements TodoService {
                 .collect(Collectors.toList());
     }
 
+    // 搜索方法
+    @Override
+    public List<TodoResponse> search(String keyword, TodoCategory category, String sortBy) {
+        // 如果关键词为空或只有空格，返回空列表
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<TodoItem> items;
+
+        // 根据分类和排序方式选择不同的查询方法
+        if (category != null) {
+            // 有分类筛选
+            if ("priority".equals(sortBy)) {
+                items = todoRepository.searchByCategoryAndKeywordOrderByPriority(category, keyword);
+            } else if ("dueDate".equals(sortBy)) {
+                items = todoRepository.searchByCategoryAndKeywordOrderByDueDate(category, keyword);
+            } else {
+                items = todoRepository.searchByCategoryAndKeyword(category, keyword);
+            }
+        } else {
+            // 无分类筛选
+            if ("priority".equals(sortBy)) {
+                items = todoRepository.searchByKeywordOrderByPriority(keyword);
+            } else if ("dueDate".equals(sortBy)) {
+                items = todoRepository.searchByKeywordOrderByDueDate(keyword);
+            } else {
+                items = todoRepository.searchByKeyword(keyword);
+            }
+        }
+
+        return items.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     // Entity 转 DTO
     private TodoResponse convertToResponse(TodoItem item) {
         TodoResponse response = new TodoResponse();

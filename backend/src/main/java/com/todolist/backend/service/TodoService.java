@@ -31,4 +31,7 @@ public interface TodoService {
 
     // 根据分类查询
     List<TodoResponse> findByCategory(TodoCategory category, String sortBy);
+
+    // 搜索任务
+    List<TodoResponse> search(String keyword, TodoCategory category, String sortBy);
 }

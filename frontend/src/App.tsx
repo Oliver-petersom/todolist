@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout, Typography, Card, message } from 'antd';
 import { TodoForm } from './components/TodoForm';
 import { TodoList } from './components/TodoList';
@@ -10,16 +10,46 @@ import './App.css';
 const { Header, Content } = Layout;
 const { Title } = Typography;
 
+// 防抖 Hook
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
+
 function App() {
     const [todos, setTodos] = useState<TodoItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<TodoCategory | undefined>(undefined);
     const [sortBy, setSortBy] = useState<string>('createdAt');
+    const [searchKeyword, setSearchKeyword] = useState<string>('');
 
-    const fetchTodos = async () => {
+    // 使用防抖优化搜索
+    const debouncedSearchKeyword = useDebounce(searchKeyword, 500);
+
+    const fetchTodos = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await todoApi.getAll(selectedCategory, sortBy);
+            let data: TodoItem[];
+
+            // 如果有搜索关键词，使用搜索接口
+            if (debouncedSearchKeyword.trim()) {
+                data = await todoApi.search(debouncedSearchKeyword, selectedCategory, sortBy);
+            } else {
+                // 否则使用普通查询
+                data = await todoApi.getAll(selectedCategory, sortBy);
+            }
+
             setTodos(data);
         } catch (error) {
             message.error('获取任务列表失败');
@@ -27,11 +57,11 @@ function App() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [debouncedSearchKeyword, selectedCategory, sortBy]);
 
     useEffect(() => {
         fetchTodos();
-    }, [selectedCategory, sortBy]);
+    }, [fetchTodos]);
 
     const handleCategoryChange = (category: TodoCategory | undefined) => {
         setSelectedCategory(category);
@@ -39,6 +69,10 @@ function App() {
 
     const handleSortChange = (newSortBy: string) => {
         setSortBy(newSortBy);
+    };
+
+    const handleSearch = (keyword: string) => {
+        setSearchKeyword(keyword);
     };
 
     return (
@@ -64,6 +98,8 @@ function App() {
                             onCategoryChange={handleCategoryChange}
                             sortBy={sortBy}
                             onSortChange={handleSortChange}
+                            searchKeyword={searchKeyword}
+                            onSearch={handleSearch}
                         />
                     </Card>
                 </div>
